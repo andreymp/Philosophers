@@ -9,6 +9,7 @@ SRC =   utils.c \
 		init.c \
 		get_time.c \
 		main.c \
+		philo.c \
 
 INC = 	-I philo.h \
 

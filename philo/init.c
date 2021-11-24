@@ -6,7 +6,7 @@
 /*   By: jobject <jobject@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/23 13:59:05 by jobject           #+#    #+#             */
-/*   Updated: 2021/11/23 20:20:26 by jobject          ###   ########.fr       */
+/*   Updated: 2021/11/24 21:14:53 by jobject          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,21 +25,56 @@ t_args	*init_input(int argc, char	**argv)
 	if (params->count == 6)
 		params->num_eat = ft_atoi(argv[5]);
 	else
-		params->num_eat = 0;
+		params->num_eat = -1;
 	return (params);
 }
 
-void	init_threads(t_filo	*filo)
+static void	mutex_init(t_filo	*philo)
 {
 	int	i;
 
 	i = 0;
+	while (i < philo->args->number)
+		pthread_mutex_init(&(philo->forks[i++]), NULL);
+	pthread_mutex_init(&philo->for_print, NULL);
+}
+
+static void	init_philo(t_game	*game, int number)
+{
+	int	fork;
+	int	i;
+
+	i = 0;
+	while (i < number)
+	{
+		fork = i % number;
+		game[i].id = i;
+		game[i].right = fork;
+		game[i].left = fork + 1;
+		i++;
+	}
+}
+
+int	init_threads(t_filo	*filo)
+{
+	int		i;
+	t_game	*game;
+
+	i = 0;
+	game = filo->game;
+	mutex_init(filo);
+	init_philo(game, filo->args->number);
+	filo->dead = false;
 	filo->time = get_current_time();
 	while (i < filo->args->number)
-		pthread_create(filo->thread[i++], NULL, game, (void *) filo);
-	while (1)
-	{
-		// if (!char)
-		// 	break ;
+	{	
+		game[i].filo = filo;
+		if (pthread_create(&game[i].thread, NULL, gaming, (void *) &game[i]))
+			return (1);
+		filo->update_time = get_current_time();
+		i++;
 	}
+	check_if_alive(filo);
+	uninit(filo);
+	return (0);
 }

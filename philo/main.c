@@ -6,7 +6,7 @@
 /*   By: jobject <jobject@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/23 11:36:15 by jobject           #+#    #+#             */
-/*   Updated: 2021/11/23 18:34:05 by jobject          ###   ########.fr       */
+/*   Updated: 2021/11/24 20:55:36 by jobject          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,5 +38,7 @@ int	main(int argc, char	**argv)
 	if (!check(argc, argv))
 		return (1);
 	filo.args = init_input(argc, argv);
+	if (init_threads(&filo))
+		return (1);
 	return (0);
 }

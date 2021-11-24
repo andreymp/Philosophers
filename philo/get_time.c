@@ -6,7 +6,7 @@
 /*   By: jobject <jobject@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/23 15:54:07 by jobject           #+#    #+#             */
-/*   Updated: 2021/11/23 18:34:34 by jobject          ###   ########.fr       */
+/*   Updated: 2021/11/24 21:24:26 by jobject          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ suseconds_t	get_current_time(void)
 	struct timeval	tp;
 
 	gettimeofday(&tp, NULL);
-	return (tp.tv_sec * 1000 + tp.tv_usec / 1000);
+	return ((tp.tv_sec * 1000) + (tp.tv_usec / 1000));
 }
 
 suseconds_t	get_time(t_filo	*filo)
