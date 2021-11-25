@@ -6,7 +6,7 @@
 /*   By: jobject <jobject@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/23 13:41:25 by jobject           #+#    #+#             */
-/*   Updated: 2021/11/24 21:17:04 by jobject          ###   ########.fr       */
+/*   Updated: 2021/11/25 16:33:44 by jobject          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,10 @@ int	ft_atoi(const char	*nptr)
 
 void	print(t_filo	*philo, t_game	*game, char	*str)
 {
-	pthread_mutex_lock(&philo->for_print);
-	printf(str, get_time(philo), game->id + 1);
-	pthread_mutex_unlock(&philo->for_print);
+	if (!philo->dead)
+	{
+		pthread_mutex_lock(&philo->for_print);
+		printf(str, get_time(philo), game->id + 1);
+		pthread_mutex_unlock(&philo->for_print);
+	}
 }
