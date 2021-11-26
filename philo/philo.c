@@ -6,7 +6,7 @@
 /*   By: jobject <jobject@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/23 17:41:03 by jobject           #+#    #+#             */
-/*   Updated: 2021/11/25 20:03:51 by jobject          ###   ########.fr       */
+/*   Updated: 2021/11/26 20:41:18 by jobject          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ void	check_if_alive(t_filo	*philo, t_game	*game)
 		i = 0;
 		while (i < philo->args->number && !philo->dead)
 		{
-			if (get_current_time() - game[i].filo->update_time > philo->args->death)
+			if ((get_current_time() - game[i].update_time) > philo->args->death)
 			{
 				print(philo, game + i, DIE);
 				philo->dead = true;
@@ -29,17 +29,21 @@ void	check_if_alive(t_filo	*philo, t_game	*game)
 			i++;
 			usleep(100);
 		}
-		if (i < philo->args->number)
+		if (philo->dead)
 			break ;
-		if (philo->args->num_eat != -1)
-			philo->args->num_eat--;
+		i = 0;
+		while (i < philo->args->number
+			&& game[i].times_to_eat >= philo->args->num_eat)
+			i++;
+		if (i == philo->args->number && philo->args->num_eat != -1)
+			philo->args->num_eat = 0;
 	}
 }
 
 void	uninit(t_filo	*philo)
 {
-	int i;
-	
+	int	i;
+
 	i = 0;
 	while (i < philo->args->number)
 		pthread_join(philo->game[i++].thread, NULL);
@@ -49,6 +53,23 @@ void	uninit(t_filo	*philo)
 	pthread_mutex_destroy(&philo->for_print);
 }
 
+static int	for_one(t_filo	*philo, t_game	*game)
+{
+	if (philo->args->number == 1)
+	{
+		pthread_mutex_unlock(&philo->forks[game->right]);
+		return (1);
+	}
+	return (0);
+}
+
+static void	sleep_and_eat(t_game	*game, t_filo	*philo)
+{
+	print(philo, game, SLEEP);
+	ft_usleep(philo->args->sleep);
+	print(philo, game, THINK);
+}
+
 void	*gaming(void	*philos)
 {
 	t_game	*game;
@@ -56,24 +77,24 @@ void	*gaming(void	*philos)
 
 	game = (t_game *) philos;
 	philo = game->filo;
-	if (game->id % 2)
-		usleep(15000);
+	skip(game->id);
 	while (!philo->dead)
 	{
 		pthread_mutex_lock(&philo->forks[game->right]);
 		print(philo, game, FORK);
+		if (for_one(philo, game))
+			break ;
 		pthread_mutex_lock(&philo->forks[game->left]);
 		print(philo, game, FORK);
 		print(philo, game, EAT);
-		usleep(philo->args->eat * 1000);
-		philo->update_time = get_current_time();
+		game->update_time = get_current_time();
+		ft_usleep(philo->args->eat);
 		pthread_mutex_unlock(&philo->forks[game->left]);
 		pthread_mutex_unlock(&philo->forks[game->right]);
+		game->times_to_eat++;
 		if (!philo->args->num_eat)
 			break ;
-		print(philo, game, SLEEP);
-		usleep(philo->args->sleep * 1000);
-		print(philo, game, THINK);
+		sleep_and_eat(game, philo);
 	}
-	return(NULL);
+	return (NULL);
 }

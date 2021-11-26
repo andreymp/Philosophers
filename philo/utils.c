@@ -6,7 +6,7 @@
 /*   By: jobject <jobject@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/23 13:41:25 by jobject           #+#    #+#             */
-/*   Updated: 2021/11/25 16:33:44 by jobject          ###   ########.fr       */
+/*   Updated: 2021/11/26 20:42:20 by jobject          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,4 +55,10 @@ void	print(t_filo	*philo, t_game	*game, char	*str)
 		printf(str, get_time(philo), game->id + 1);
 		pthread_mutex_unlock(&philo->for_print);
 	}
+}
+
+void	skip(int n)
+{
+	if (n % 2)
+		usleep(150);
 }

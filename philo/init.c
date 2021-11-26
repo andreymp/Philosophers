@@ -6,7 +6,7 @@
 /*   By: jobject <jobject@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/23 13:59:05 by jobject           #+#    #+#             */
-/*   Updated: 2021/11/25 19:57:47 by jobject          ###   ########.fr       */
+/*   Updated: 2021/11/26 19:46:22 by jobject          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ static void	init_philo(t_game	*game, int number)
 	while (i < number)
 	{
 		game[i].id = i;
-		game[i].right = i % number;
+		game[i].right = i;
 		game[i].left = (i + 1) % number;
 		i++;
 	}
@@ -67,12 +67,13 @@ int	init_threads(t_filo	*filo)
 	while (i < filo->args->number)
 	{	
 		game[i].filo = filo;
+		game[i].times_to_eat = 0;
 		if (pthread_create(&game[i].thread, NULL, gaming, (void *) &game[i]))
 			return (1);
-		game[i].filo->update_time = get_current_time();
+		game[i].update_time = get_current_time();
 		i++;
 	}
-	check_if_alive(filo, game);
+	check_if_alive(game->filo, game);
 	uninit(filo);
 	return (0);
 }
